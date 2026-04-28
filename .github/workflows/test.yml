@@ -137,8 +137,8 @@ jobs:
         with:
           push: true
           tags: |
-            danielleev33/module14_is601:latest
-            danielleev33/module14_is601:${{ github.sha }}
+            danielleev33/is601_final_project:latest
+            danielleev33/is601_final_project:${{ github.sha }}
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
