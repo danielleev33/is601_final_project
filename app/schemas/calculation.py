@@ -36,6 +36,7 @@ class CalculationType(str, Enum):
     SUBTRACTION = "subtraction"
     MULTIPLICATION = "multiplication"
     DIVISION = "division"
+    EXPONENTIATION = "exponentiation"
 
 class CalculationBase(BaseModel):
     """
@@ -49,7 +50,7 @@ class CalculationBase(BaseModel):
     """
     type: CalculationType = Field(
         ...,  # The ... means this field is required
-        description="Type of calculation (addition, subtraction, multiplication, division)",
+        description="Type of calculation (addition, subtraction, multiplication, division, exponentiation)",
         example="addition"
     )
     inputs: List[float] = Field(
@@ -140,7 +141,8 @@ class CalculationBase(BaseModel):
         json_schema_extra={
             "examples": [
                 {"type": "addition", "inputs": [10.5, 3, 2]},
-                {"type": "division", "inputs": [100, 2]}
+                {"type": "division", "inputs": [100, 2]},
+                {"type": "exponentiation", "inputs": [2, 3]}
             ]
         }
     )
@@ -162,12 +164,12 @@ class CalculationCreate(CalculationBase):
     model_config = ConfigDict(
         # Example for documentation and testing
         json_schema_extra={
-            "example": {
-                "type": "addition",
-                "inputs": [10.5, 3, 2],
-                "user_id": "123e4567-e89b-12d3-a456-426614174000"
-            }
-        }
+    "example": {
+        "type": "exponentiation",
+        "inputs": [2, 3],
+        "user_id": "123e4567-e89b-12d3-a456-426614174000"
+    }
+}
     )
 
 class CalculationUpdate(BaseModel):

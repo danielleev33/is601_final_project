@@ -178,6 +178,7 @@ class AbstractCalculation:
             'subtraction': Subtraction,
             'multiplication': Multiplication,
             'division': Division,
+            'exponentiation': Exponentiation,
         }
         calculation_class = calculation_classes.get(calculation_type.lower())
         if not calculation_class:
@@ -353,4 +354,37 @@ class Division(Calculation):
             if value == 0:
                 raise ValueError("Cannot divide by zero.")
             result /= value
+        return result
+
+class Exponentiation(Calculation):
+    """
+    Exponentiation calculation subclass.
+
+    Implements sequential exponentiation starting from the first number.
+    Examples:
+        [2, 3] -> 2 ** 3 = 8
+        [2, 3, 2] -> (2 ** 3) ** 2 = 64
+    """
+    __mapper_args__ = {"polymorphic_identity": "exponentiation"}
+
+    def get_result(self) -> float:
+        """
+        Calculate the result of exponentiating the first value by all subsequent values.
+
+        Takes the first number and raises it to each remaining number sequentially.
+
+        Returns:
+            float: The result of the exponentiation sequence
+
+        Raises:
+            ValueError: If inputs are not a list or if fewer than 2 numbers are provided
+        """
+        if not isinstance(self.inputs, list):
+            raise ValueError("Inputs must be a list of numbers.")
+        if len(self.inputs) < 2:
+            raise ValueError("Inputs must be a list with at least two numbers.")
+
+        result = self.inputs[0]
+        for value in self.inputs[1:]:
+            result = result ** value
         return result

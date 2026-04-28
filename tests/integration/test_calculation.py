@@ -1,5 +1,6 @@
 import pytest
 import uuid
+from app.models.calculation import Calculation, Addition, Subtraction, Multiplication, Division, Exponentiation
 
 from app.models.calculation import (
     Calculation,
@@ -150,3 +151,22 @@ def test_invalid_inputs_for_division():
     division = Division(user_id=dummy_user_id(), inputs=[10])
     with pytest.raises(ValueError, match="Inputs must be a list with at least two numbers."):
         division.get_result()
+
+
+def test_exponentiation_get_result(db_session, test_user):
+    calc = Calculation.create(
+        calculation_type="exponentiation",
+        user_id=test_user.id,
+        inputs=[2, 3]
+    )
+    assert calc.get_result() == 8
+
+
+def test_calculation_factory_exponentiation(test_user):
+    calc = Calculation.create(
+        calculation_type="exponentiation",
+        user_id=test_user.id,
+        inputs=[2, 3]
+    )
+    assert isinstance(calc, Exponentiation)
+    assert calc.type == "exponentiation"

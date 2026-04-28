@@ -217,21 +217,18 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
-  // Retrieve token
   const token = localStorage.getItem('access_token');
   if (!token) {
     window.location.href = '/login';
     return;
   }
 
-  // Helper for alerts
   function showError(message) {
     const errorAlert = document.getElementById('errorAlert');
     const errorMessage = document.getElementById('errorMessage');
     errorMessage.textContent = message;
     errorAlert.classList.remove('hidden');
     
-    // Smooth fade out
     setTimeout(() => {
       errorAlert.classList.add('opacity-0');
       setTimeout(() => {
@@ -240,7 +237,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }, 300);
     }, 5000);
     
-    // Scroll to the error message if needed
     errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
   
@@ -250,7 +246,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     successMessage.textContent = message;
     successAlert.classList.remove('hidden');
     
-    // Smooth fade out
     setTimeout(() => {
       successAlert.classList.add('opacity-0');
       setTimeout(() => {
@@ -259,18 +254,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       }, 300);
     }, 5000);
     
-    // Scroll to the success message if needed
     successAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  // Get calc ID from Jinja context
   const calcId = "{{ calc_id }}";
   const calcTypeInput = document.getElementById('calcType');
   const calcInputsInput = document.getElementById('calcInputs');
   const editForm = document.getElementById('editCalculationForm');
   const previewResult = document.getElementById('previewResult');
   
-  // Function to calculate result for preview
   function calculatePreview(type, inputs) {
     if (!inputs || inputs.length < 2) {
       return null;
@@ -288,17 +280,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         result = inputs.reduce((a, b) => a * b, 1);
         break;
       case 'division':
-        // Avoid division by zero
         if (inputs.some((value, index) => index > 0 && value === 0)) {
           return 'Cannot divide by zero';
         }
         result = inputs.reduce((a, b, i) => i === 0 ? a : a / b, inputs[0]);
         break;
+      case 'exponentiation':
+        result = inputs.reduce((a, b, i) => i === 0 ? a : a ** b, inputs[0]);
+        break;
       default:
         return 'Unknown operation';
     }
     
-    // Format the result nicely
     return typeof result === 'number' ? 
       (Math.abs(result) < 0.0001 && result !== 0) ? 
         result.toExponential(4) : 
@@ -306,7 +299,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       result;
   }
   
-  // Function to update the preview
   function updatePreview() {
     const type = calcTypeInput.value;
     const inputsString = calcInputsInput.value;
@@ -315,7 +307,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       .map(num => parseFloat(num.trim()))
       .filter(num => !isNaN(num));
     
-    // Create appropriate operator symbol
     let operator;
     switch (type) {
       case 'addition':
@@ -330,11 +321,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       case 'division':
         operator = '÷';
         break;
+      case 'exponentiation':
+        operator = '^';
+        break;
       default:
         operator = '?';
     }
     
-    // Update preview section
     if (inputs.length < 2) {
       previewResult.innerHTML = `
         <p class="text-gray-500 text-center">
@@ -362,10 +355,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     `;
   }
 
-  // 1) Load existing calculation
   async function loadCalculation() {
     try {
-      // Show loading state
       document.getElementById('loadingState').classList.remove('hidden');
       document.getElementById('editCard').classList.add('hidden');
       document.getElementById('errorState').classList.add('hidden');
@@ -382,7 +373,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         
         if (response.status === 404) {
-          // Show not found state
           document.getElementById('loadingState').classList.add('hidden');
           document.getElementById('errorState').classList.remove('hidden');
           return;
@@ -393,55 +383,43 @@ document.addEventListener('DOMContentLoaded', async () => {
       
       const calc = await response.json();
       
-      // Hide loading, show edit form
       document.getElementById('loadingState').classList.add('hidden');
       document.getElementById('editCard').classList.remove('hidden');
       
-      // Populate form fields
       calcTypeInput.value = calc.type;
       calcInputsInput.value = calc.inputs.join(', ');
       
-      // Update the preview
       updatePreview();
       
     } catch (error) {
-      // Show error state
       document.getElementById('loadingState').classList.add('hidden');
       document.getElementById('errorState').classList.remove('hidden');
       showError(error.message || 'Failed to load calculation');
     }
   }
 
-  // Add input handler to update preview on typing
   calcInputsInput.addEventListener('input', updatePreview);
 
-  // 2) Submit the edited calculation
   editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Get the submit button to show loading state
     const submitButton = e.target.querySelector('button[type="submit"]');
     const originalButtonContent = submitButton.innerHTML;
     
-    // Parse input string into an array of floats
     const newInputs = calcInputsInput.value
       .split(',')
       .map(num => parseFloat(num.trim()))
       .filter(num => !isNaN(num));
 
-    // Validate inputs
     if (newInputs.length < 2) {
       showError('Please enter at least two valid numbers separated by commas.');
       
-      // Add error class to the input
       calcInputsInput.classList.add('border-red-500', 'bg-red-50');
       document.getElementById('inputHelp').classList.add('text-red-500');
       document.getElementById('inputHelp').textContent = 'At least two valid numbers are required.';
       
-      // Focus the input
       calcInputsInput.focus();
       
-      // Remove error styling after a delay or on input
       setTimeout(() => {
         calcInputsInput.classList.remove('border-red-500', 'bg-red-50');
         document.getElementById('inputHelp').classList.remove('text-red-500');
@@ -458,13 +436,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
     
-    // Check for division by zero
     if (calcTypeInput.value === 'division' && newInputs.some((value, index) => index > 0 && value === 0)) {
       showError('Division by zero is not allowed.');
       return;
     }
 
-    // Show loading state on button
     submitButton.disabled = true;
     submitButton.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Saving...';
 
@@ -487,31 +463,25 @@ document.addEventListener('DOMContentLoaded', async () => {
           throw new Error('Calculation not found.');
         }
         
-        // Try to parse any error message from the API
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.detail || 'Failed to update calculation');
       }
       
-      // Get the updated calculation
-      const updatedCalc = await response.json();
+      await response.json();
 
-      // Use toast notification if available in layout
       if (typeof window.showToast === 'function') {
         window.showToast('Calculation updated successfully!', 'success');
       } else {
         showSuccess('Calculation updated successfully!');
       }
       
-      // Update the preview with new data
       updatePreview();
       
-      // Add a success indicator to the form
       calcInputsInput.classList.add('border-green-500');
       setTimeout(() => {
         calcInputsInput.classList.remove('border-green-500');
       }, 2000);
       
-      // Optionally redirect after a short delay
       setTimeout(() => { 
         window.location.href = `/dashboard/view/${calcId}`; 
       }, 1500);
@@ -519,13 +489,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch (error) {
       showError(error.message || 'Failed to update calculation');
     } finally {
-      // Restore the button state
       submitButton.disabled = false;
       submitButton.innerHTML = originalButtonContent;
     }
   });
 
-  // Initialize
   loadCalculation();
 });
 </script>

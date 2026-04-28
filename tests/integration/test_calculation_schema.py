@@ -2,6 +2,7 @@ import pytest
 from pydantic import ValidationError
 from uuid import uuid4
 from datetime import datetime
+from app.schemas.calculation import CalculationCreate, CalculationType
 from app.schemas.calculation import (
     CalculationCreate,
     CalculationUpdate,
@@ -97,3 +98,12 @@ def test_calculation_response_valid():
     assert calc_response.type == "subtraction"
     assert calc_response.inputs == [20, 5]
     assert calc_response.result == 15.5
+
+def test_calculation_create_exponentiation_valid():
+    calc = CalculationCreate(
+        type="exponentiation",
+        inputs=[2, 3],
+        user_id="123e4567-e89b-12d3-a456-426614174000"
+    )
+    assert calc.type == CalculationType.EXPONENTIATION
+    assert calc.inputs == [2.0, 3.0]
