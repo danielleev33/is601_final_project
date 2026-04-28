@@ -1,8 +1,21 @@
-# Module 14 IS 601 - FastAPI Calculations App
+# Final Project IS 601 - Advanced Feature & Finalized Application
 
 ## Project Overview
 
-This projetct is FastAPI-based calculations application with user authentication, full BREAD functionality for calculations, and an additional profile management feature. Users can register, log in, create and manage calculations, and update their own profile information. The project also includes automated testing, containerized deployment with Docker, and CI/CD through GitHub Actions.
+## Final Project Enhancement
+
+For the final project, I extended the application by adding an exponentiation calculation type. This feature was integrated across the full stack, including the backend calculation logic, schema validation, front end selection options, edit page preview behavior, and automated testing.
+
+To support this enhancement, I added:
+- calculation model logic for exponentiation
+- schema support and validation for the new calculation type
+- front-end integration on the dashboard and edit workflow
+- unit, integration, and E2E test coverage for exponentiation
+
+This allowed me to build on the existing calculator application without changing the overall architecture, while still adding a meaningful new feature.
+
+## How to Use the Exponentiation Feature
+The exponentiation feature can be used from the main dashboard just like the other calculation types.
 
 ### Authentication
 - User registration
