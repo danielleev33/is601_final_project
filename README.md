@@ -89,7 +89,7 @@ README.md
 To run prject locally:
 1. Clone the repository:
 git clone git@github.com:danielleev33/is601_final_project.git
-cd module14_is601
+cd final_project_is601
 
 2. Start the application:
 docker compose up --build -d
