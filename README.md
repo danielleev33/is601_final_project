@@ -17,6 +17,25 @@ This allowed me to build on the existing calculator application without changing
 ## How to Use the Exponentiation Feature
 The exponentiation feature can be used from the main dashboard just like the other calculation types.
 
+### Steps
+1. Log in to the application.
+2. Go to the **Dashboard**.
+3. In the **Operation Type** dropdown, select **Exponentiation**.
+4. In the **Numbers** field, enter two or more numbers separated by commas.
+5. Click **Calculate**.
+
+### Example
+- Input: `2, 4`
+- Result: `16`
+
+### Multiple Inputs
+If multiple values are entered, the application evaluates exponentiation from left to right.
+
+### Notes
+- At least two numeric inputs are required.
+- Inputs must be comma-separated.
+- The exponentiation operation is available in the dashboard creation form and is also supported in the edit calculation preview.
+
 ### Authentication
 - User registration
 - User login with JWT-based authentication
@@ -69,7 +88,7 @@ README.md
 
 To run prject locally:
 1. Clone the repository:
-git clone git@github.com:danielleev33/module14_is601.git
+git clone git@github.com:danielleev33/is601_final_project.git
 cd module14_is601
 
 2. Start the application:
@@ -122,7 +141,10 @@ Run E2E tests only:
 docker compose exec web pytest -p no:cov -o addopts='' tests/e2e/test_fastapi_calculator.py -v
 
 Docker Hub Image:
-danielleev33/module14_is601
+danielleev33/is601_final_project
+
+DockerHub Repository:
+https://hub.docker.com/repository/docker/danielleev33/is601_final_project/general
 
 During development I made some updates to get everything fully working:
 - updated dependencies flagged by Trivy
